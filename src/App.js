@@ -4,7 +4,7 @@ import Products from './components/Shop/Products'
 import Notification from './components/UI/Notification'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useRef } from 'react'
-import { sendCardData } from './store/cart-slice'
+import { fetchCartData, sendCardData } from './store/cart-actions'
 
 function App() {
   const dispatch = useDispatch()
@@ -13,6 +13,10 @@ function App() {
   const notification = useSelector(state => state.ui.notification)
 
   const isInitial = useRef(true)
+
+  useEffect(() => {
+    dispatch(fetchCartData())
+  }, [dispatch])
 
   useEffect(() => {
     // If is the firs time that the App is runing, we don't send the cart to Firebase.
