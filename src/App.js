@@ -14,6 +14,8 @@ function App() {
 
   const isInitial = useRef(true)
 
+  // This useEffect runs only the first time the component is mounted
+  // and fetch the cart data stored in Firebase.
   useEffect(() => {
     dispatch(fetchCartData())
   }, [dispatch])
@@ -24,8 +26,12 @@ function App() {
       isInitial.current = false
       return
     }
-    // Dispathing a THUNK of cart-slice that will send the cart to Firebase and handle notifications
-    dispatch(sendCardData(cart))
+    // But if isn't the fist time, we dispatch a Action Creator Thunk of cart-slice
+    // that will send the cart to Firebase and handle notifications if the cart has
+    // been changed (itens had been added or removed)
+    if (cart.changed) {
+      dispatch(sendCardData(cart))
+    }
   }, [cart, dispatch])
 
   return (
