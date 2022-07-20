@@ -4,7 +4,7 @@ import Products from './components/Shop/Products'
 import Notification from './components/UI/Notification'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useRef } from 'react'
-import { uiActions } from './store/ui-slice'
+import { sendCardData } from './store/cart-slice'
 
 function App() {
   const dispatch = useDispatch()
@@ -15,61 +15,13 @@ function App() {
   const isInitial = useRef(true)
 
   useEffect(() => {
-    //------------------------------------- Notification types
-    function notificateSuccess() {
-      dispatch(
-        uiActions.showNotification({
-          status: 'success',
-          title: 'Success',
-          message: 'Sent cart data successfully!',
-        })
-      )
-    }
-    function notificateError() {
-      dispatch(
-        uiActions.showNotification({
-          status: 'error',
-          title: 'Error!',
-          message: 'Sending cart data failed!',
-        })
-      )
-    }
-    function notiicatePending() {
-      dispatch(
-        uiActions.showNotification({
-          status: 'pending',
-          title: 'Sending',
-          message: 'Sending cart data...',
-        })
-      )
-    }
-    //------------------------------------- Notification types
-
-    async function sendCartData() {
-      notiicatePending()
-      const response = await fetch(
-        'https://redux-advanced-93b6c-default-rtdb.firebaseio.com/cart.json',
-        {
-          method: 'PUT',
-          body: JSON.stringify(cart),
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Sending cart data failed.')
-      }
-      notificateSuccess()
-    }
-
     // If is the firs time that the App is runing, we don't send the cart to Firebase.
     if (isInitial.current) {
       isInitial.current = false
       return
     }
-
-    // Send cart data to Firebase
-    sendCartData().catch(error => {
-      notificateError()
-    })
+    // Dispathing a THUNK of cart-slice that will send the cart to Firebase and handle notifications
+    dispatch(sendCardData(cart))
   }, [cart, dispatch])
 
   return (
